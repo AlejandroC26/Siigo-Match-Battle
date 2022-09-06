@@ -14,7 +14,10 @@ class CreateMatchTable extends Migration
     public function up()
     {
         Schema::create('match', function (Blueprint $table) {
+            /* creacion de los campos para la tabla match */
             $table->id();
+            $table->date('time_match');
+            $table->enum('state_match', ['finished','wating','playing']);
             $table->timestamps();
         });
     }

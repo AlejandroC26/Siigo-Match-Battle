@@ -14,6 +14,7 @@ class CreateCardsTable extends Migration
     public function up()
     {
         Schema::create('cards', function (Blueprint $table) {
+            /* creacion de los campos para la tabla cards */
             $table->string('id');
             $table->integer('cylinder');
             $table->date('year');
