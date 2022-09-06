@@ -1,0 +1,81 @@
+body{
+    padding: 0;
+    margin: 0;
+    background: #f6f6f6;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.home-game{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-game,
+.game {
+    min-width: 100vw;
+    min-height: 100vh;
+}
+/* JUEGO */
+.game {
+    padding: 1rem 2rem;
+    box-sizing: border-box;
+    display: grid;
+    grid-template: 
+                "player4  cards     player5" auto
+                "player6  cards     player7" auto
+                "player3  player1   player2"  auto /
+                180px     1fr       180px;
+}
+.game .player-wrapper-1{grid-area: player1;}
+.game .player-wrapper-2{grid-area: player2;}
+.game .player-wrapper-3{grid-area: player3;}
+.game .player-wrapper-4{grid-area: player4;}
+.game .player-wrapper-5{grid-area: player5;}
+.game .player-wrapper-6{grid-area: player6;}
+.game .player-wrapper-7{grid-area: player7;}
+
+.game .cards{
+    grid-area: cards;
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+}
+
+/* MENÚ DEL JUEGO */
+.game-menu{
+    padding: 10px;
+    background: red;
+    width: 100%;
+    max-width: 600px;
+}
+.game-menu .game-menu-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1rem;
+}
+.game-menu .game-options {
+    margin-top: 1rem;
+}
+.game-menu .game-name {
+    font-size: 1.6rem;
+    color: #fff;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.game-menu .game-buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: .3rem;
+}
+.game-menu .game-buttons .button {
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    background: #fff;
+    padding: .5rem 1rem;
+    text-align: center;
+    border-radius: 5px;
+}
