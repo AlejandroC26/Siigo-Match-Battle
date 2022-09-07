@@ -13,7 +13,6 @@
           <div class="game-buttons">
             <router-link class="button" to="/sala-espera/123">CREAR PARTIDA</router-link>
             <a class="button" @click="launchModalJoin()">UNIRSE PARTIDA</a>
-            <router-link class="button" to="/">COLECCIÓN DE CARTAS</router-link>
           </div>
         </div>
       </div>
