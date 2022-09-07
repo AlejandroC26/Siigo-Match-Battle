@@ -31,3 +31,4 @@ La versión actual es 1.0, ya que es el primer prototipo que fue desarrollado.
 
 Los desarrolladores encargados de diseñar e implementar este prototipo de juego son Alejandro Cubillos Contreras,quien se encuentra en github como AlejandroC26 y
 James Santiago Ordoñez, quien se encuentra en github como jamesOrdonez, aprendices Sena del Tecnólogo en ADSI ID 2280204, regional Huila sede Yambotro - Pitalito. 
+Fue desarrollado bajo los criterios de Senasoft 2022 en su 13° edicion.
