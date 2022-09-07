@@ -63,7 +63,6 @@
         mounted() {
             if(this.info.ftHover) this.ftHover = this.info.ftHover;
             if(this.info.feature) this.ftSelected = this.info.feature;
-            console.log(this.ftSelected)
             this.card_info = this.info.data;
         }
     }
@@ -72,12 +71,12 @@
     .card{
         background: #fff;
         width: 100%;
-        min-width: 190px;
+        min-width: 180px;
         max-width: 190px;
         font-family: Arial, Helvetica, sans-serif;
         box-shadow: 0 0 5px rgb(100, 100, 100);
         border-radius: .1rem;
-        font-size: .95rem;
+        font-size: .9rem;
         padding: .5rem 1rem 1.5rem 1rem;
         cursor: pointer;
         transition: all .5s;
@@ -100,7 +99,7 @@
         justify-content: center;
     }
     .card .card-image {
-        height: 150px;
+        height: 120px;
         max-width: 100%;
     }
     .card .feature {

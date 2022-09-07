@@ -35,12 +35,14 @@ body{
 .game .player-wrapper-6{grid-area: player6;}
 .game .player-wrapper-7{grid-area: player7;}
 
+/* CARTAS CENTRALES */
 .game .cards{
     grid-area: cards;
     display: flex;
     position: relative;
     align-items: center;
     justify-content: center;
+    min-height: 120px;
 }
 
 /* MENÚ DEL JUEGO */
@@ -78,4 +80,24 @@ body{
     padding: .5rem 1rem;
     text-align: center;
     border-radius: 5px;
+}
+
+/* ROUND TABLE */
+.round-table {
+    border-radius: .3rem;
+    overflow: hidden;
+    top: 5rem;
+    left: calc(25%);
+    position: absolute;
+    border-collapse: collapse;
+    box-shadow: 0 0 10px #4e4e4e;
+}
+
+.round-table th,
+.round-table td{
+    height: 20px;
+    padding: .5rem 1rem;
+    color: #fff;
+    background-color: #4e4e4e;
+    border-bottom: solid 1px rgb(243, 243, 243);
 }
