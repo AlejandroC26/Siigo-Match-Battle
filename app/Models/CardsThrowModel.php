@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MatchModel extends Model
+class CardsThrowModel extends Model
 {
     use HasFactory;
     protected $fillable = [
-      'time_match',
-      'state_match',  
+        'fk_cards_match',
+        'fk_rounds_match',
     ];
 }

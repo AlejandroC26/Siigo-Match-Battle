@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MatchModel extends Model
+class UserMatchModel extends Model
 {
     use HasFactory;
     protected $fillable = [
-      'time_match',
-      'state_match',  
+        'state',
+        'fk_user',
+        'fk_match',
     ];
 }

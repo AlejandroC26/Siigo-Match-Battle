@@ -16,7 +16,7 @@ class CreateUsersMatchTable extends Migration
         Schema::create('users_match', function (Blueprint $table) {
             /* creacion de los campos para la tabla users_match */
             $table->id();
-            $table->enum('state',['active','inactive','finish']);
+            $table->enum('state',['active','inactive','finish', 'defeated']);
             $table->foreignId('fk_user')
                 ->constrained('users')
                 ->onDelete('cascade')

@@ -20,7 +20,7 @@ class CreateCardsTable extends Migration
             $table->date('year');
             $table->integer('torque');
             $table->integer('top_speed');
-            $table->integer('weight');
+            $table->integer('weigth');
             $table->integer('name');
             $table->string('image');
             $table->timestamps();

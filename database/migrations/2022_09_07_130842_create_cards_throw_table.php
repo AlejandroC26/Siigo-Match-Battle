@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRoundsMatchTable extends Migration
+class CreateCardsThrowTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,16 @@ class CreateRoundsMatchTable extends Migration
      */
     public function up()
     {
-        Schema::create('rounds_match', function (Blueprint $table) {
-            /* creacion de los campos para la tabla rounds_match */
+        Schema::create('cards_throw', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('fk_user_match')
-                ->constrained('users_match')
+            $table->foreignId('fk_cards_match')
+                ->constrained('cards_match')
+                ->onDelete('cascade')
+                ->onCascade('cascade');
+            $table->foreignId('fk_round_match')
+                ->constrained('rounds_match')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->foreignId('fk_user_win')
-                ->constrained('users_match')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
-            $table->string('charasteristic');
             $table->timestamps();
         });
     }
@@ -36,6 +34,6 @@ class CreateRoundsMatchTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('rounds_match');
+        Schema::dropIfExists('cards_throw');
     }
 }
