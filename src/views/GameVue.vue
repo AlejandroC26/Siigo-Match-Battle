@@ -1,9 +1,9 @@
 <template>
-    <div style="box-sizing:border-box;">
+    <div class="game-page" style="box-sizing:border-box;">
         <div class="wrapper-modal f-c" v-if="config.gameState == 'finished'">
             <div class="winner-modal">
                 <div class="modal-header">
-                    <h1>¡JUEGO FINALIZADO!</h1>
+                    <h1 style="margin-top: 0;">¡JUEGO FINALIZADO!</h1>
                 </div>
                 <div class="modal-body">
                     <table class="general-table">
@@ -17,7 +17,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr  v-for="i in 7">
                                 <td><center>1°</center></td>
                                 <td><center>James</center></td>
                             </tr>
@@ -32,7 +32,7 @@
         <div class="wrapper-modal f-c" v-if="config.showWinner">
             <div class="winner-modal">
                 <div class="modal-header">
-                    <h1>¡GANADOR DE RONDA!</h1>
+                    <h1 style="margin-top: 0;">¡GANADOR DE RONDA!</h1>
                 </div>
                 <div class="modal-body">
                     <div class="player" style="
@@ -75,9 +75,7 @@
                 <div class="player-cards" 
                 v-if="(i+1) == 1 && config.userPlaying == 1 && myCards.length ">
                     <Card class="player-card" :info="{ftHover:true,  data: myCards[0]}" :putCart="onFeatures"></Card>
-                    <div class="false-card" style="top: -93px"></div>
-                    <div class="false-card" style="top: -92px"></div>
-                    <div class="false-card" style="top: -91px"></div>
+                    <div class="false-card" style="top: -88px"></div>
                 </div>
                 <!-- INFORMACIÓN DE JUGADORES -->
                 <div class="player" :class="'player'+(i+1)">
@@ -190,6 +188,7 @@
         justify-content: center;
     }
     .player{
+        background: #fff;
         padding:  .3rem .5rem 1.2rem .5rem;
         width: 100%;
         max-width: 120px;
@@ -247,7 +246,7 @@
     .card.active-card {
         position: absolute;
         transform: scale(1);
-        box-shadow: 0 0 20px #e4e707;
+        box-shadow: 0 0 20px #0000;
     }
     .card.throw-card{
         transform: scale(.8);

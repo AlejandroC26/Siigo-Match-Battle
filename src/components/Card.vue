@@ -108,11 +108,11 @@
         margin-bottom: .3rem;
         transition: all .2s;
         border-radius: 3px;
-        padding: 0 .1rem;
+        padding: .2rem .25rem;
     }
     .card .ft-hover:hover,
     .card .active {
-        background: rgb(0, 2, 3);
+        background: rgb(83, 83, 83);
         color: #fff;
     }
 </style>

@@ -1,13 +1,18 @@
 <template>
     <div class="home-game">
+        <div class="color-line"></div>
         <div class="game-menu">
             <div class="game-menu-header">
-                <div class="game-name">Siigo Match Battle - Sala Espera</div>
+                <div class="game-name">Siigo Match Battle</div>
             </div>
             <div class="game-menu-body">
+                <!-- IMAGEN -->
+                <div class="game-image">
+                    <img src="../assets/img/game/menu-image.png" alt="">
+                </div>
                 <!-- CONTENIDO -->
                 <div class="game-options">
-                    <div class="game-buttons">
+                    <div class="game-buttons code-room">
                         <div>
                             <span>Código de la sala</span>
                             <div class="room-id">
@@ -30,10 +35,6 @@
                        
                     </div>
                 </div>
-                <!-- IMAGEN -->
-                <div class="game-image">
-                    <img src="../assets/img/game/menu-image.png" alt="">
-                </div>
             </div>
         </div>
     </div>
@@ -50,9 +51,14 @@
     .room-id {
         background: #fff;
         padding: .5rem;
-        border-radius: 1px;
+        border-radius: .3rem;
         font-weight: bold;
         border: solid 1px rgb(0, 0, 0);
-
+    }
+    .code-room {
+        background: #ffffff;
+        border-radius: 1rem;
+        box-shadow: 0 0 .5rem #b8b8b8;
+        padding: .5rem 1rem;
     }
 </style>
