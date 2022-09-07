@@ -1,5 +1,56 @@
 <template>
     <div style="box-sizing:border-box;">
+        <div class="wrapper-modal f-c" v-if="config.gameState == 'finished'">
+            <div class="winner-modal">
+                <div class="modal-header">
+                    <h1>¡JUEGO FINALIZADO!</h1>
+                </div>
+                <div class="modal-body">
+                    <table class="general-table">
+                        <thead>
+                            <tr>
+                                <th colspan="3">Resultados</th>
+                            </tr>
+                            <tr>
+                                <th>Posición</th>
+                                <th>Jugador</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><center>1°</center></td>
+                                <td><center>James</center></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <router-link to="/" class="button">Volver al Inicio</router-link>
+                </div>
+            </div>
+        </div>
+        <div class="wrapper-modal f-c" v-if="config.showWinner">
+            <div class="winner-modal">
+                <div class="modal-header">
+                    <h1>¡GANADOR DE RONDA!</h1>
+                </div>
+                <div class="modal-body">
+                    <div class="player" style="
+                        box-shadow: 0 0 5px #000;
+                        margin: 0 auto;">
+                        <div class="player-image">
+                            <img src="../assets/logo.png">
+                        </div>
+                        <div class="player-info">
+                            <div class="player-name">Alejandro</div>
+                            <div class="player-num-cards">
+                                <label>logo-c</label> 2
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <table class="round-table" v-if="config.showCard > 0">
             <thead>
                 <tr>
@@ -65,6 +116,8 @@
                 config: {
                     userPlaying: 1,
                     showCard: 0,
+                    showWinner: false,
+                    gameState: 'playing'
                 },
                 playedCards:[],
                 myCards: [
@@ -112,9 +165,18 @@
                 let intervalo = setInterval(()=> {
                     this.config.showCard = i;
                     i++;
-                    if(i > 7) clearInterval(intervalo);
+                    if(i > 7) {
+                        clearInterval(intervalo);
+                        setTimeout(() => {
+                            this.config.showWinner = true;
+                            setTimeout(() => {this.config.showWinner = false;
+                            setTimeout(() => {this.config.gameState = 'finished';}, 1000);
+                            }, 2000);
+                        }, 800);
+                            
+                    }
                 }, 500);
-            }
+            },
         },
         components: {
             Card,
@@ -194,7 +256,7 @@
     /* CARTAS DEL JUGADOR */
     .player-cards{
         top: -20px;
-        width: 305px;
+        width: 245px;
         position: relative;
     }
     .player-cards .player-card {

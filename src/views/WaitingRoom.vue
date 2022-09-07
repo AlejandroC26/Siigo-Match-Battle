@@ -20,9 +20,9 @@
                         <div>
                             Límite tiempo 1h
                         </div>
-                        <button class="button">
+                        <router-link to="/juego" class="button">
                             Iniciar Partida
-                        </button>
+                        </router-link>
                         <button class="button"
                         @click="quitMatch()">
                             Abandonar

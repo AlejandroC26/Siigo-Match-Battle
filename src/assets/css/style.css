@@ -9,12 +9,40 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
+    background: rgb(122,125,142);
+    background: radial-gradient(circle, rgba(122,125,142,1) 0%, rgba(27,27,27,1) 100%);
+}
+.color-line {
+    bottom: 0;
+    border-top: solid 1px rgb(71, 71, 71);
+    background: rgb(247,121,25);
+    background: linear-gradient(0deg, rgba(247,121,25,1) 0%, rgba(242,119,26,1) 100%);
+    position: fixed;
+    width: 100%;
+    height: 40vh;
 }
 
 .home-game,
 .game {
     min-width: 100vw;
     min-height: 100vh;
+}
+/* GENERAL */
+.button {
+    display: block;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    background: rgb(70, 70, 70);
+    color: #fff;
+    padding: .5rem 1rem;
+    text-align: center;
+    border-radius: 5px;
+    border: solid 2px #4e4e4e;
+    transition: all .5s;
+}
+.button:hover {
+    background: rgb(41, 41, 41);
 }
 /* JUEGO */
 .game {
@@ -47,21 +75,28 @@ body{
 
 /* MENÚ DEL JUEGO */
 .game-menu{
+    position: relative;
+    z-index: 10;
     padding: 10px;
-    background: red;
     width: 100%;
-    max-width: 600px;
+    max-width: 1200px;
 }
 .game-menu .game-menu-body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 1rem;
 }
+.game-image img{
+    width: 100%;
+    max-width: 600px;
+}
 .game-menu .game-options {
     margin-top: 1rem;
 }
 .game-menu .game-name {
-    font-size: 1.6rem;
+    margin-bottom: 5rem;
+    text-align: center;
+    font-size: 4rem;
     color: #fff;
     font-weight: bold;
     font-family: Arial, Helvetica, sans-serif;
@@ -71,20 +106,23 @@ body{
     display: grid;
     grid-template-columns: 1fr;
     grid-gap: .3rem;
+    max-width: 350px;
 }
 .game-menu .game-buttons .button {
-    text-decoration: none;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-    background: #fff;
-    padding: .5rem 1rem;
-    text-align: center;
-    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: .4rem 1.5rem;
 }
-
 /* ROUND TABLE */
+.general-table {
+    width: 100%;
+    border-radius: .2rem;
+    overflow: hidden;
+    border-collapse: collapse;
+    box-shadow: 0 0 10px #4e4e4e;
+}
 .round-table {
-    border-radius: .3rem;
+    border-radius: .2rem;
     overflow: hidden;
     top: 5rem;
     left: calc(25%);
@@ -93,6 +131,8 @@ body{
     box-shadow: 0 0 10px #4e4e4e;
 }
 
+.general-table th,
+.general-table td,
 .round-table th,
 .round-table td{
     height: 20px;
@@ -100,4 +140,27 @@ body{
     color: #fff;
     background-color: #4e4e4e;
     border-bottom: solid 1px rgb(243, 243, 243);
+}
+
+/* ====MODAL==== */
+.wrapper-modal {
+    animation: fadein  .5s;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, .5);
+    z-index: 100;
+}
+
+.winner-modal {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1rem 2rem;
+    box-sizing: border-box;
+    box-shadow: 0 0 10px rgb(110, 110, 110);
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
