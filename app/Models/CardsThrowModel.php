@@ -10,7 +10,7 @@ class CardsThrowModel extends Model
     use HasFactory;
     protected $fillable = [
         'fk_cards_match',
-        'fk_rounds_match',
+        'fk_round_match',
     ];
     protected $table = "cards_throw";
 

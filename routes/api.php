@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::group([
     'prefix' => 'auth'
-
 ], function ($router) {
     Route::post('login', 'App\Http\Controllers\AuthController@login');
     Route::post('logout', 'App\Http\Controllers\AuthController@logout');
@@ -39,6 +38,7 @@ Route::group([
 Route::group([
     'prefix' => 'round'
 ], function ($router) {
+    Route::get('/{round}/cards', 'App\Http\Controllers\RoundController@getThrowCards');
     Route::post('/throwCard/match/{id}', 'App\Http\Controllers\RoundController@throwCard');
     Route::post('/{round}/compareCards', 'App\Http\Controllers\RoundController@compareCards');
 });

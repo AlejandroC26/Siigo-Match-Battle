@@ -12,6 +12,13 @@ use App\Models\RoundsMatchModel;
 
 class RoundController extends Controller
 {
+    public function getThrowCards(Request $request, $id){
+        $cards_of_round = CardsThrowModel::where('fk_round_match', $id)
+            ->join('cards_match', 'cards_match.id', 'fk_cards_match')
+            ->join('cards', 'cards.id', 'fk_card')
+            ->get();
+        return response()->json($cards_of_round);
+    }
     public function throwCard(Request $request, $id_match){
         try {
             $users = UserMatchModel::where(['fk_match'=>$id_match])->get();
@@ -53,11 +60,13 @@ class RoundController extends Controller
         $winner_card = CardsThrowModel::where('fk_round_match', $id)
             ->join('cards_match', 'cards_match.id', 'fk_cards_match')
             ->join('cards', 'cards.id', 'fk_card')   
+            ->join('users', 'users.id', 'fk_user_match')
             ->orderByRaw('cards.'.$charasteristic[0]->charasteristic.' DESC')
             ->limit(1)
             ->get();
         $round = RoundsMatchModel::find($winner_card[0]->fk_round_match);
         $round->fk_user_win = $winner_card[0]->fk_user_match;
+        $round->save();
         CardsThrowModel::where('fk_round_match', $id)
             ->join('cards_match', 'cards_match.id', 'fk_cards_match')
             ->update(['fk_user_match'=>$winner_card[0]->fk_user_match]);

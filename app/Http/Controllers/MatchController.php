@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 /* MODELS */
 use App\Models\CardsModel;
 use App\Models\MatchModel;
@@ -12,6 +13,7 @@ use App\Models\UserMatchModel;
 use App\Models\CardsMatchModel;
 use App\Models\RoundsMatchModel;
 use App\Models\CardsThrowModel;
+
 
 class MatchController extends Controller
 {
@@ -42,7 +44,6 @@ class MatchController extends Controller
     // AGREGA USUARIO AL JUEGO
     public function addUser (Request $request, $id, $userId) {
         try {
-            $id = base64_decode($id);
             $userexists = UserMatchModel::where(['fk_user'=>$userId])
                 ->where(['fk_match'=>$id])->count();
             $limite = UserMatchModel::where(['fk_match'=>$id])->count();
@@ -60,18 +61,35 @@ class MatchController extends Controller
     // OBTIENE LOS USUARIOS DE LA SALA
     public function activeUsers (Request $request, $id) {
         try {
-            $id = base64_decode($id);
-            $matchUsers = UserMatchModel::where(['fk_match'=>$id])->get();
-            return response($matchUsers);
+            $users = [];
+            $matchUsers = UserMatchModel::select('users_match.id', 'users_match.state', 'fk_match', 
+                'fk_user', 'name')
+                ->where(['fk_match'=>$id])
+                ->join('users', 'users.id', 'fk_user')
+                ->get();
+            foreach ($matchUsers as $user) {
+                $cards_user = CardsMatchModel::select(DB::raw('COUNT(*) as count_cards'))
+                    ->where('fk_user_match', $user->id)
+                    ->get();
+                $user_push = [
+                    "id"          =>$user->id,
+                    "state"       =>$user->state,
+                    "fk_match"    =>$user->fk_match,
+                    "fk_user"     =>$user->fk_user,
+                    "name"        =>$user->name,
+                    "count_cards" =>$cards_user[0]->count_cards
+                ];
+                array_push($users, $user_push);
+            }
+            return response()->json($users);
         } catch (\Throwable $th) {
-            //throw $th;
+            return response()->json(['message'=>$th->getMessage()], 400);
         }
         
     }
     // INICIA EL JUEGO
     public function startMatch (Request $request, $id){
         try {
-            $id = base64_decode($id);
             $match = MatchModel::where('id','=', $id)
                 ->where('state_match','=', 'waiting')->get();
             if(!count($match)) return response()->json(['message'=>'esta sala ya no se encuentra disponible'], 400);
@@ -81,19 +99,21 @@ class MatchController extends Controller
             $cards = CardsModel::all();
 
             $shuffled_cards = $cards->shuffle();
-            $chunks = $shuffled_cards->chunk(count($matchUsers));
+
+
+
+            $chunks = $shuffled_cards->chunk((count($cards) / count($matchUsers)));
 
             $i = 0;
             $leftover = [];
             $userChunk = [];
-
+            $index_user = 0;
             foreach ($chunks as $chunk) {
                 $i++;
                 if($i > count($matchUsers)) {
                     // REGISTRA LA CARTA SIN USUARIOS
                     array_push($leftover, $chunk);
                 } else {
-                    $index_user = 0;
                     foreach ($chunk as $carta) {
                         array_push($userChunk, $carta);
 
@@ -101,9 +121,9 @@ class MatchController extends Controller
                             "fk_card"=>$carta->id,
                             "fk_user_match"=>$matchUsers[$index_user]->id
                         ]);
-                        $index_user ++;
                     }
                 }
+                $index_user ++;
             }
             // SELECCIONA LA PRIMERA CARTA
             $first_card = CardsMatchModel::select('cards_match.id', 'cards_match.fk_user_match')
@@ -137,9 +157,11 @@ class MatchController extends Controller
     // OBTIENE PRIMERA CARTA DEL JUEGO
     public function firstCard(Request $request){
         try {
-            $first_card = CardsThrowModel::select('cards_throw.fk_round_match', 'cards_match.fk_card', 'users_match.id as user_match')
+            $first_card = CardsThrowModel::select('cards_throw.fk_round_match', 'cards_match.fk_card', 'users_match.id as user_match',
+            'cylinder', 'year', 'torque', 'top_speed', 'weight', 'name', 'image')
                 ->join('cards_match', 'cards_match.id', '=', 'cards_throw.fk_cards_match')
                 ->join('users_match', 'users_match.id', '=', 'cards_match.fk_user_match')
+                ->join('cards', 'cards.id', 'fk_card')
                 ->where('fk_match', '=',1)
                 ->get();
             return response()->json($first_card);
