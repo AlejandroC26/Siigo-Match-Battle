@@ -4,14 +4,14 @@
       <div class="game-menu">
         <div class="game-menu-body">
           <div>
-            <form>
+            <form @submit.prevent="Login()">
                 <h3>Inicio de Sesión</h3>
 
                 <label for="username">Nombre de Usuario</label>
-                <input type="text" placeholder="Nombre...">
+                <input v-model="user.name" type="text" placeholder="Nombre...">
 
                 <label for="password">Contraseña</label>
-                <input type="password" placeholder="Contraseña...">
+                <input v-model="user.password" type="password" placeholder="Contraseña...">
 
                 <button>Ingresar</button>
                 <router-link to="/registro">Registrarse</router-link>
@@ -23,13 +23,45 @@
 </template>
   
 <script>
+  import axios from 'axios';
   export default {
     name: 'Login',
-    methods: {
-      launchModalJoin(){
-        alert('HOLA');
+    data(){
+      return {
+        user: {
+          name: 'santiago',
+          password: '123'
+        }
       }
-    }
+    },
+    methods: {
+      Login(){
+        axios.post('http://127.0.0.1:8000/api/auth/login', this.user).then(res => {
+          if(res.status == 200){
+            localStorage.setItem('token', res.data.access_token)
+            window.location.href = '/inicio';
+          }
+        }).catch(err => {
+          console.log(err.response)
+          this.launchAlert({type: 'error', title: '¡Usuario o contraseña incorrectos!'})
+        })
+      },
+      launchAlert(config){
+          if(!config.timeout) config.timeout = 2500;
+          const Toast = this.$swal.mixin({
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: config.timeout,
+          })
+          Toast.fire({
+              icon: config.type,
+              title: config.title,
+              text: config.message,
+          })
+      },
+    },
+    
   }
 </script>
 

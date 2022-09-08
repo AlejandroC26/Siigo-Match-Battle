@@ -130,6 +130,7 @@ body{
     box-shadow: 0 0 10px #4e4e4e;
 }
 .round-table {
+    z-index: 10;
     border-radius: .2rem;
     overflow: hidden;
     top: 5rem;

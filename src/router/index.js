@@ -22,7 +22,7 @@ const routes = [
     component: () => import('../views/WaitingRoom.vue')
   },
   {
-    path: '/juego',
+    path: '/juego/:id',
     name: 'Game',
     component: () => import('../views/GameVue.vue')
   },

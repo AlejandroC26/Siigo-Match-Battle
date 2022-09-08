@@ -11,7 +11,8 @@
         </div>
         <div class="game-options">
           <div class="game-buttons">
-            <router-link class="button" to="/sala-espera/123">CREAR PARTIDA</router-link>
+            <a class="button" to="/sala-espera/123"
+            @click="createRoom()">CREAR PARTIDA</a>
             <a class="button" @click="launchModalJoin()">UNIRSE PARTIDA</a>
           </div>
         </div>
@@ -21,12 +22,23 @@
 </template>
 
 <script>
+import axios from 'axios';
+  
 export default {
   name: 'HomeView',
   methods: {
-    launchModalJoin(){
-      alert('HOLA');
-    }
-  }
+    createRoom(){
+      axios.post('http://127.0.0.1:8000/api/match/register', {time_match:30}, 
+      { headers: { "Authorization": "Bearer " + localStorage.getItem('token')}})
+      .then(res => {
+        console.log(res);
+        window.location.href = '/sala-espera/'+res.data.data.id;
+      }).catch(err => {
+        console.log(err.response)
+        this.launchAlert({type: 'error', title: '¡Errror creando partida!'})
+      })
+      //
+    },
+  },
 }
 </script>

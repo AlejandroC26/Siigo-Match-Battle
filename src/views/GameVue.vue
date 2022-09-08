@@ -42,10 +42,8 @@
                             <img src="../assets/logo.png">
                         </div>
                         <div class="player-info">
-                            <div class="player-name">Alejandro</div>
-                            <div class="player-num-cards">
-                                <label>logo-c</label> 2
-                            </div>
+                            <div class="player-name"
+                            style="color: #000;">{{winner_round}}</div>
                         </div>
                     </div>
                 </div>
@@ -62,9 +60,9 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="i in config.showCard">
-                    <td>James</td>
-                    <td>2500</td>
+                <tr v-for="(user, index) in playedCards">
+                    <td>Jugador {{index + 1}}</td>
+                    <td><center>{{user.feature.value}}</center></td>
                 </tr>
             </tbody>
         </table>
@@ -85,7 +83,7 @@
                     <div class="player-info">
                         <div class="player-name">{{player.name}}</div>
                         <div class="player-num-cards">
-                            <label>logo-c</label> {{player.cards}}
+                            N° Cartas - {{player.count_cards}}
                         </div>
                     </div>
                 </div>
@@ -94,23 +92,31 @@
             <div class="cards">
                 <div class="played-cards">
                     <Card v-if="playedCards.length" :info="{feature: playedCards[0].feature,  data: playedCards[0].data}" class="active-card"></Card>
-                    <Card v-if="config.showCard >= 2" :info="{}"></Card>
-                    <Card v-if="config.showCard >= 3" :info="{}"></Card>
-                    <Card v-if="config.showCard >= 4" :info="{}"></Card>
-                    <Card v-if="config.showCard >= 5" :info="{}"></Card>
-                    <Card v-if="config.showCard >= 6" :info="{}"></Card>
-                    <Card v-if="config.showCard >= 7" :info="{}"></Card>
+                    <Card v-if="config.showCard >= 2" :info="{feature: playedCards[1].feature,  data: playedCards[1].data}"></Card>
+                    <Card v-if="config.showCard >= 3" :info="{feature: playedCards[2].feature,  data: playedCards[2].data}"></Card>
+                    <Card v-if="config.showCard >= 4" :info="{feature: playedCards[3].feature,  data: playedCards[3].data}"></Card>
+                    <Card v-if="config.showCard >= 5" :info="{feature: playedCards[4].feature,  data: playedCards[4].data}"></Card>
+                    <Card v-if="config.showCard >= 6" :info="{feature: playedCards[5].feature,  data: playedCards[5].data}"></Card>
+                    <Card v-if="config.showCard >= 7" :info="{feature: playedCards[6].feature,  data: playedCards[6].data}"></Card>
                 </div>
             </div>
         </div>
     </div>
 </template>
 <script>
+    import axios from 'axios';
     import Card from '../components/Card.vue'
     export default {
         name: 'Game',
+        components: {
+            Card,
+        },
         data: function() {
             return {
+                round: 2,
+                winner_round: '',
+                room_id: '',
+                users_interval:'',
                 config: {
                     userPlaying: 1,
                     showCard: 0,
@@ -118,44 +124,75 @@
                     gameState: 'playing'
                 },
                 playedCards:[],
-                myCards: [
-                    {
-                        id: '1 A',
-                        name: 'Kawasaki Ninja H2R',
-                        cylinder: 998,
-                        year: '2022-01-01',
-                        torque: 25,
-                        top_speed: 400,
-                        weigh: 500,
-                    }
-                ],
-                players: [
-                    {
-                        'id': 1,
-                        'name': 'Alejandro',
-                        'cards': 1
-                    },
-                    {
-                        'id': 2,
-                        'name': 'Santiago',
-                        'cards': 1
-                    },
-                    {
-                        'id': 3,
-                        'name': 'James',
-                        'cards': 1
-                    },
-                ]
+                myCards: [],
+                players: []
             }
         },
         methods: {
-            onFeatures(returned) {
-                this.userPlaying = 2;
-                const result = this.myCards.filter(card => card.id != this.myCards[0].id);
-                this.playedCards.push({
-                    feature: returned,
-                    data: this.myCards[0]
+            async onFeatures(returned) {
+                // SELECCIONA LA CARACTERÍSTICA
+                const select_characteristic = new Promise((resolve, reject)=> {
+                    axios.post(`http://127.0.0.1:8000/api/match/${this.room_id}/firstGame`, {
+                        round_match_id: 1,
+                        characteristic: returned.feature
+                    },{ headers: { "Authorization": "Bearer " + localStorage.getItem('token')}})
+                    .then(res => {
+                        resolve(res.data.data);
+                    }).catch(err => {reject(err.response)});
+                })
+                let round = await select_characteristic;
+                // LANZA LA CARTA
+                let throw_card = new Promise((resolve, reject)=> {
+                    axios.post(`http://127.0.0.1:8000/api/round/throwCard/match/${this.room_id}`, null,
+                    { headers: { "Authorization": "Bearer " + localStorage.getItem('token')}})
+                    .then(res => {
+                        resolve(res.data.data);
+                    }).catch(err => {reject(err.response)});
                 });
+                await throw_card;
+                // COMPARA LAS CARTAS
+                const cards_compare = new Promise((resolve, reject)=> {
+                    axios.post(`http://127.0.0.1:8000/api/round/${round.id}/compareCards`, null,
+                    { headers: { "Authorization": "Bearer " + localStorage.getItem('token')}})
+                    .then(res => {
+                        resolve(res.data.data);
+                    }).catch(err => {reject(err.response)});
+                });
+                let compare = await cards_compare;
+                this.winner_round = compare[0].name;
+                // OBTIENE LAS CARTAS POR RONDA
+                const cards_of_round = new Promise((resolve, reject)=> {
+                    axios.get(`http://127.0.0.1:8000/api/round/${round.id}/cards`,
+                    { headers: { "Authorization": "Bearer " + localStorage.getItem('token')}})
+                    .then(res => {
+                        resolve(res.data);
+                    }).catch(err => {reject(err.response)});
+                });
+
+                let cards = await cards_of_round;
+
+                this.config.userPlaying = 1; // USUARIO QUE TIENE EL TURNO
+
+                const result = this.myCards.filter(card => card.id != this.myCards[0].id);
+
+                cards.forEach(card => {
+                    let json ={
+                        id: card.fk_card,
+                        name: card.name,
+                        cylinder: card.cylinder,
+                        year: card.year,
+                        torque: card.torque,
+                        top_speed: card.top_speed,
+                        weigh: card.weight,
+                    }
+
+                    this.playedCards.push({
+                        feature: returned,
+                        data: json
+                    });
+                });
+
+
                 this.myCards = result;
 
                 this.config.showCard = 1;
@@ -163,21 +200,76 @@
                 let intervalo = setInterval(()=> {
                     this.config.showCard = i;
                     i++;
-                    if(i > 7) {
+                    // TIRA LAS CARTAS DE LOS USUARIOS
+                    if(i > this.players.length) {
                         clearInterval(intervalo);
                         setTimeout(() => {
                             this.config.showWinner = true;
-                            setTimeout(() => {this.config.showWinner = false;
-                            setTimeout(() => {this.config.gameState = 'finished';}, 1000);
+                            setTimeout(() => {
+                                this.config.showWinner = false;
+                                this.playedCards = [];
+                                this.config.showCard = 0;
+
+                                this.round = this.round++;
+                                this.getNextRoundCard();
+                                return;
+                                setTimeout(() => {this.config.gameState = 'finished';}, 1000);
                             }, 2000);
                         }, 800);
-                            
                     }
                 }, 500);
             },
+            usersInLine(){
+                axios.get(`http://127.0.0.1:8000/api/match/${this.room_id}/users`, 
+                { headers: { "Authorization": "Bearer " + localStorage.getItem('token')}})
+                .then(res => {
+                    this.players = res.data;
+                    this.num_players = res.data.length;
+                }).catch(err => {console.log(err.response)})
+            },
+            getFirstCard(){
+                axios.get(`http://127.0.0.1:8000/api/match/${this.room_id}/firstCard`, 
+                { headers: { "Authorization": "Bearer " + localStorage.getItem('token')}})
+                .then(res => {
+                    this.myCards = [];
+                    let card ={
+                        id: res.data[0].fk_card,
+                        name: res.data[0].name,
+                        cylinder: res.data[0].cylinder,
+                        year: res.data[0].year,
+                        torque: res.data[0].torque,
+                        top_speed: res.data[0].top_speed,
+                        weigh: res.data[0].weight,
+                    }
+                    this.myCards.push(card);
+                }).catch(err => {console.log(err.response)})
+            },
+            getNextRoundCard(){
+                axios.get(`http://127.0.0.1:8000/api/round/${this.round}/cards`, 
+                { headers: { "Authorization": "Bearer " + localStorage.getItem('token')}})
+                .then(res => {
+                    console.log(res.data);
+                    this.myCards = [];
+                    let card ={
+                        id: res.data[0].fk_card,
+                        name: res.data[0].name,
+                        cylinder: res.data[0].cylinder,
+                        year: res.data[0].year,
+                        torque: res.data[0].torque,
+                        top_speed: res.data[0].top_speed,
+                        weigh: res.data[0].weight,
+                    }
+                    this.myCards.push(card);
+                }).catch(err => {console.log(err.response)})
+            }
         },
-        components: {
-            Card,
+        mounted(){
+            this.room_id = this.$route.params.id;
+            this.usersInLine();
+            this.getFirstCard();
+            this.interval = setInterval(()=> {
+                this.usersInLine();
+            }, 2000);
         }
     } 
 </script>
