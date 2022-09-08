@@ -18,10 +18,7 @@ Los turnos se escogen de acuerdo al número de la carta, estas se ordenan en ord
 caso quien tenga la carta con el código 1A inicia la partida y escoge la característica con la cual va a participar en la ronda y el juego automáticamente 
 escoge la primer carta maso de los otros participantes y compara quien tiene el número mayor en la característica escogida, quien tenga el valor más alto 
 gana la ronda e inicia la siguiente ronda seleccionando la característica que desee. 
-Gana quien le quite todas las cartas a sus oponentes; en caso de que uno solo se quede sin cartas, quedará como espectador hasta que termine la partida.
-Cuando finalice la partida, el juego retorna un mensaje informando quien fue el ganador de la partida y una tabla de posiciones, posterior a esto
-automáticamente se cierra la partida y el código de acceso expira; si se desea se crea una nueva partida, tendrá que crear un código nuevo y se invita otros 
-participantes con el código que proporciona el juego. 
+Gana quien le quite todas las cartas a sus oponentes; cuando finalice la partida, el juego retorna un mensaje informando quien fue el ganador de la partida y una tabla de posiciones, posterior a esto automáticamente se cierra la partida y el código de acceso expira; si se desea se crea una nueva partida, tendrá que crear un código nuevo y se invita otros participantes con el código que proporciona el juego. 
 
 ###Version 
 
