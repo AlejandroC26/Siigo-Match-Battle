@@ -11,14 +11,13 @@ use App\Models\MatchModel;
 use App\Models\UserMatchModel;
 use App\Models\CardsMatchModel;
 use App\Models\RoundsMatchModel;
+use App\Models\CardsThrowModel;
 
 class MatchController extends Controller
 {
     public function __construct(){
         $this->middleware('auth:api');
     }
-
-
 
     public function register (Request $request) {
         try {
@@ -71,49 +70,115 @@ class MatchController extends Controller
     }
     // INICIA EL JUEGO
     public function startMatch (Request $request, $id){
-        $id = base64_decode($id);
-        $match = MatchModel::where('id','=', $id)
-            ->where('state_match','=', 'waiting')->get();
-        if(!count($match)) return response()->json(['message'=>'esta sala ya no se encuentra disponible'], 400);
-        $matchUsers = UserMatchModel::where(['fk_match'=>$id])->get();
-        if(count($matchUsers) < 2) return response()->json(['message'=>'faltan usuarios para iniciar el juego'], 400); 
-        $cards = CardsModel::all();
+        try {
+            $id = base64_decode($id);
+            $match = MatchModel::where('id','=', $id)
+                ->where('state_match','=', 'waiting')->get();
+            if(!count($match)) return response()->json(['message'=>'esta sala ya no se encuentra disponible'], 400);
+            // SELECCIONA LOS USUARIOS DE LA PARTIDA
+            $matchUsers = UserMatchModel::where(['fk_match'=>$id])->get();
+            if(count($matchUsers) < 2) return response()->json(['message'=>'faltan usuarios para iniciar el juego'], 400); 
+            $cards = CardsModel::all();
 
-        $shuffled_cards = $cards->shuffle();
-        $chunks = $shuffled_cards->chunk(count($matchUsers));
+            $shuffled_cards = $cards->shuffle();
+            $chunks = $shuffled_cards->chunk(count($matchUsers));
 
-        $i = 0;
-        $leftover = [];
-        $userChunk = [];
-        foreach ($chunks as $chunk) {
-            $i++;
-            if($i > count($matchUsers)) {
-                // REGISTRA LA CARTA SIN USUARIOS
-                array_push($leftover, $chunk);
-            } else {
-                $index_user = 0;
-                foreach ($chunk as $carta) {
-                    array_push($userChunk, $carta);
+            $i = 0;
+            $leftover = [];
+            $userChunk = [];
 
-                    CardsMatchModel::create([
-                        "fk_card"=>$carta->id,
-                        "fk_user_match"=>$matchUsers[$index_user]->id
-                    ]);
-                    $index_user ++;
+            foreach ($chunks as $chunk) {
+                $i++;
+                if($i > count($matchUsers)) {
+                    // REGISTRA LA CARTA SIN USUARIOS
+                    array_push($leftover, $chunk);
+                } else {
+                    $index_user = 0;
+                    foreach ($chunk as $carta) {
+                        array_push($userChunk, $carta);
+
+                        CardsMatchModel::create([
+                            "fk_card"=>$carta->id,
+                            "fk_user_match"=>$matchUsers[$index_user]->id
+                        ]);
+                        $index_user ++;
+                    }
                 }
             }
+            // SELECCIONA LA PRIMERA CARTA
+            $first_card = CardsMatchModel::select('cards_match.id', 'cards_match.fk_user_match')
+                ->join('users_match', 'users_match.fk_user', '=', 'cards_match.fk_user_match')
+                ->where('fk_match', '=', $id)
+                ->orderByRaw('fk_card ASC')
+                ->limit(1)
+                ->get();
+            // CREA LA PRIMERA RONDA
+            $round_match = RoundsMatchModel::create([
+                'fk_user_match'=>$first_card[0]->fk_user_match,
+            ]);
+            // LANZA LA PRIMERA CARTA
+            $cards_throw = CardsThrowModel::create([
+                "fk_round_match"=>$round_match->id,
+                "fk_cards_match"=>$first_card[0]->id,
+            ]);
+            // CAMBIA EL ESTADO DE LA PARTIDA A INICIADA
+            MatchModel::where(['id'=>$match[0]->id])
+                ->update(['state_match'=>'playing']);
+            return response()->json([
+                'message'=>'juego iniciado correctamente', 
+                'data'=>[
+                    "machine_cards" => $leftover
+            ]]);
+        } catch (\Throwable $th) {
+            return response()->json(['message'=>$th->getMessage()], 400);
         }
-        // CREA LA PRIMERA RONDA
-        RoundsMatchModel::create([
-            'fk_user_match'=>1,
-        ]);
-        // CAMBIA EL ESTADO DE LA PARTIDA A INICIADA
-        MatchModel::where(['id'=>$match[0]->id])
-            ->update(['state_match'=>'playing']);
-        return response()->json([
-            'message'=>'juego iniciado correctamente', 
-            'data'=>[
-                "machine_cards" => $leftover
-        ]]);
+        
+    }
+    // OBTIENE PRIMERA CARTA DEL JUEGO
+    public function firstCard(Request $request){
+        try {
+            $first_card = CardsThrowModel::select('cards_throw.fk_round_match', 'cards_match.fk_card', 'users_match.id as user_match')
+                ->join('cards_match', 'cards_match.id', '=', 'cards_throw.fk_cards_match')
+                ->join('users_match', 'users_match.id', '=', 'cards_match.fk_user_match')
+                ->where('fk_match', '=',1)
+                ->get();
+            return response()->json($first_card);
+        } catch (\Throwable $th) {
+            return response()->json(['message'=>$th->getMessage()], 400);
+        }
+    }
+    // EDITA LA PRIMERA JUGADA DEL JUEGO
+    public function firstGame(Request $request){
+        try {
+            $validator = Validator::make($request->all(), [
+                'round_match_id'=>'required',
+                'characteristic'=>'required'
+            ]);
+            if($validator->fails()){return response()->json(["message"=>"fields validation fails", "fields"=>$validator->errors()]);}
+            $rounds_match = RoundsMatchModel::find($request->round_match_id);
+            $rounds_match->charasteristic = $request->characteristic;
+            $rounds_match->save();
+            return response()->json(['message'=>'característica seleccionada', 'data'=>$rounds_match]);
+        } catch (\Throwable $th) {
+            return response()->json(['message'=>$th->getMessage()], 400);
+        }
+    }
+
+    // OBTIENE LAS CARTAS DE LOS USUARIOS
+    public function getCards(Request $request, $id){
+        try {
+            $users = UserMatchModel::where(['fk_match'=>$id])->get();
+            $cards = [];
+            foreach ($users as $user) {
+                $user_card = CardsMatchModel::where('fk_user_match', $user->id)
+                    ->orderByRaw('fk_card ASC')
+                    ->limit(1)
+                    ->get();
+                if($user_card) array_push($cards, $user_card[0]);
+            }
+            return response()->json($cards);
+        } catch (\Throwable $th) {
+            return response()->json(['message'=>$th->getMessage()], 400);
+        }
     }
 }
